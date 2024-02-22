@@ -1,0 +1,8 @@
+{
+  "dependencies": {
+    "identityapp1": {
+      "connectionInfo": "App registration: named-locations-updater, Tenant: SlowJedi (slowjedi.com - Microsoft Entra ID)",
+      "type": "identityapp.default"
+    }
+  }
+}

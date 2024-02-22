@@ -4,4 +4,6 @@
 
 /.vs
 /named-locations-updater/.config
-/named-locations-updater/obj
+/WebApplication4/.config
+/WebApplication4/obj
+/WebApplication4/bin

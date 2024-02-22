@@ -2,8 +2,10 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.Authorization;
+using Microsoft.Graph;
 using Microsoft.Identity.Web;
 using Microsoft.Identity.Web.UI;
+using Azure.Identity;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -16,9 +18,14 @@ builder.Services.AddAuthorization(options =>
     // By default, all incoming requests will be authorized according to the default policy.
     options.FallbackPolicy = options.DefaultPolicy;
 });
+
+builder.Services.AddScoped<GraphServiceClient>(sp =>
+{
+    return new GraphServiceClient(new ManagedIdentityCredential());
+});
+
 builder.Services.AddRazorPages()
     .AddMicrosoftIdentityUI();
-
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

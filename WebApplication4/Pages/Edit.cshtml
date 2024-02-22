@@ -1,0 +1,15 @@
+@page
+@model EditModel
+@{
+    ViewData["Title"] = "Edit Named IP Location";
+}
+
+<h1>Edit Named IP Location</h1>
+
+<form method="post">
+    <input type="hidden" asp-for="Location.Id" />
+    <p><strong>@Html.DisplayNameFor(model => model.Location.DisplayName):</strong> @Model.Location.DisplayName</p>
+    <label for="IpRanges">IP Ranges</label><br />
+    <textarea id="IpRanges" name="IpRanges" rows="20">@ViewData["IpRanges"]</textarea><br />
+    <button type="submit">Save</button>
+</form>

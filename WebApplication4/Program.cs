@@ -19,9 +19,11 @@ builder.Services.AddAuthorization(options =>
     options.FallbackPolicy = options.DefaultPolicy;
 });
 
+List<String> scopes = new List<String>(new[] { "https://graph.microsoft.com/.default" });
+
 builder.Services.AddScoped<GraphServiceClient>(sp =>
 {
-    return new GraphServiceClient(new ManagedIdentityCredential());
+    return new GraphServiceClient(new ManagedIdentityCredential(), scopes);
 });
 
 builder.Services.AddRazorPages()

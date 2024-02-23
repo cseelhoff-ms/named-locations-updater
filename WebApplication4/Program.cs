@@ -21,11 +21,11 @@ builder.Services.AddAuthorization(options =>
 
 List<String> scopes = new List<String>(new[] { "https://graph.microsoft.com/.default" });
 
+
 builder.Services.AddScoped<GraphServiceClient>(sp =>
 {
     return new GraphServiceClient(new ManagedIdentityCredential(), scopes);
 });
-
 
 builder.Services.AddRazorPages()
     .AddMicrosoftIdentityUI();

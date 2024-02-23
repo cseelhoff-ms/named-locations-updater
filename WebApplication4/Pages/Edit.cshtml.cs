@@ -16,7 +16,7 @@ public class EditModel : PageModel
     {
         List<String> scopes = new List<String>(new[] { "https://graph.microsoft.com/.default" });
         _graphServiceClient = new GraphServiceClient(new ManagedIdentityCredential(), scopes);
-
+        Location = new IpNamedLocation();
     }
 
     public string IpRangeToString(IpRange ipRange)
@@ -24,9 +24,9 @@ public class EditModel : PageModel
         switch (ipRange)
         {
             case IPv4CidrRange ipv4Range:
-                return ipv4Range.CidrAddress;
+                return ipv4Range.CidrAddress ?? string.Empty;
             case IPv6CidrRange ipv6Range:
-                return ipv6Range.CidrAddress;
+                return ipv6Range.CidrAddress ?? string.Empty;
             default:
                 throw new ArgumentException("Unknown IP range type", nameof(ipRange));
         }
@@ -43,13 +43,13 @@ public class EditModel : PageModel
 
         Location = new IpNamedLocation
         {
-            Id = ipNamedLocation.Id,
-            DisplayName = ipNamedLocation.DisplayName,
-            IpRanges = ipNamedLocation.IpRanges,
-            IsTrusted = ipNamedLocation.IsTrusted
+            Id = ipNamedLocation?.Id,
+            DisplayName = ipNamedLocation?.DisplayName,
+            IpRanges = ipNamedLocation?.IpRanges,
+            IsTrusted = ipNamedLocation?.IsTrusted
         };
 
-        ViewData["IpRanges"] = string.Join("\n", Location.IpRanges.Select(ipRange => IpRangeToString(ipRange)));
+        ViewData["IpRanges"] = string.Join("\n", Location.IpRanges?.Select(ipRange => IpRangeToString(ipRange)) ?? Enumerable.Empty<string>());
 
         return Page();
     }

@@ -18,13 +18,16 @@ namespace WebApplication4.Pages
             _logger = logger;
             List<String> scopes = new List<String>(new[] { "https://graph.microsoft.com/.default" });
             _graphServiceClient = new GraphServiceClient(new ManagedIdentityCredential(), scopes);
+            Locations = new List<NamedLocation>();
         }
 
         public List<NamedLocation> Locations { get; private set; }
 
         public async Task OnGetAsync()
         {
-            NamedLocationCollectionResponse? result = await _graphServiceClient.Identity.ConditionalAccess.NamedLocations.GetAsync((requestConfiguration) =>
+            List<String> scopes = new List<String>(new[] { "https://graph.microsoft.com/.default" });
+            var graphServiceClient = new GraphServiceClient(new ManagedIdentityCredential(), scopes);
+            NamedLocationCollectionResponse? result = await graphServiceClient.Identity.ConditionalAccess.NamedLocations.GetAsync((requestConfiguration) =>
             {
                 requestConfiguration.QueryParameters.Filter = "isof('microsoft.graph.ipNamedLocation')";
             });

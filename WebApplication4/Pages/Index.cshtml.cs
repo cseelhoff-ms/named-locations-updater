@@ -12,12 +12,14 @@ namespace WebApplication4.Pages
     {
         private readonly ILogger<IndexModel> _logger;
         private readonly GraphServiceClient _graphServiceClient;
+        private readonly ManagedIdentityCredential _managedIdentityCredential;
 
         public IndexModel(ILogger<IndexModel> logger, GraphServiceClient graphServiceClient)
         {
             _logger = logger;
             List<String> scopes = new List<String>(new[] { "https://graph.microsoft.com/.default" });
-            _graphServiceClient = new GraphServiceClient(new ManagedIdentityCredential(), scopes);
+            _managedIdentityCredential = new ManagedIdentityCredential();
+            _graphServiceClient = new GraphServiceClient(_managedIdentityCredential, scopes);
             Locations = new List<NamedLocation>();
         }
 
@@ -26,11 +28,14 @@ namespace WebApplication4.Pages
         public async Task OnGetAsync()
         {
             List<String> scopes = new List<String>(new[] { "https://graph.microsoft.com/.default" });
-            var graphServiceClient = new GraphServiceClient(new ManagedIdentityCredential(), scopes);
-            NamedLocationCollectionResponse? result = await graphServiceClient.Identity.ConditionalAccess.NamedLocations.GetAsync((requestConfiguration) =>
-            {
-                requestConfiguration.QueryParameters.Filter = "isof('microsoft.graph.ipNamedLocation')";
-            });
+            GraphServiceClient graphServiceClient = new GraphServiceClient(_managedIdentityCredential, scopes);
+            // log print all debug log information for GraphServiceClient graphServiceClient including principal id, scopes, permissions, ect...
+            _logger.LogDebug("GraphServiceClient graphServiceClient: {graphServiceClient}", graphServiceClient);
+            _logger.LogDebug("GraphServiceClient graphServiceClient: {graphServiceClient}", _graphServiceClient);
+            _logger.LogDebug("ManagedIdentityCredential _managedIdentityCredential: {managedIdentityCredential}", _managedIdentityCredential);
+            _logger.LogDebug("Scopes: {scopes}", scopes);
+
+            NamedLocationCollectionResponse? result = await graphServiceClient.Identity.ConditionalAccess.NamedLocations.GetAsync();
             Locations = result?.Value ?? new List<NamedLocation>();
         }
     }

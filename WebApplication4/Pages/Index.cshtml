@@ -1,18 +1,37 @@
-﻿@page
+@page
 @model IndexModel
 @{
     ViewData["Title"] = "Home page";
 }
 
 <div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Here are the named IP locations:</p>
-    <ul>
-        @foreach (var location in Model.Locations)
-        {
-            <li>
-                <a href="/Edit?locationId=@location.Id">@location.DisplayName</a>
-            </li>
-        }
-    </ul>
+    <h1 class="display-4">VF Manager Temporary Access Pass Reset</h1>
 </div>
+
+<div>List of Managed Users</div>
+<form method="post">
+    <select name="selectedUser">
+        <option selected="selected" value="">Select a user</option>
+        @if (ViewData["ListOfManagedUsers"] is List<string> listOfManagedUsers)
+        {
+            @foreach (string user in listOfManagedUsers)
+            {
+                <option value="@user">@user</option>
+            }
+        }
+    </select>
+    <select name="TAPLifetimeInMinutes">
+        <option selected="selected" value="60">1 hour</option>
+        <option value="120">2 hours</option>
+        <option value="180">3 hours</option>
+        <option value="240">4 hours</option>
+    </select>
+    <input type="submit" value="Reset Temporary Access Password">
+</form>
+
+<p>Temporary Access Pass for User: @ViewData["SelectedUser"]
+@if (ViewData["TemporaryAccessPass"] is string temporaryAccessPass)
+{
+    <input type="text" value="@temporaryAccessPass" id="temporaryAccessPass">
+}
+</p>

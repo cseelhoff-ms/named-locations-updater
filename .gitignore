@@ -1,9 +1,93 @@
-﻿################################################################################
-# This .gitignore file was automatically created by Microsoft(R) Visual Studio.
-################################################################################
+# Ignore Visual Studio files
+.vs/
 
-/.vs
-/named-locations-updater/.config
-/WebApplication4/.config
-/WebApplication4/obj
-/WebApplication4/bin
+# Ignore build output
+bin/
+obj/
+WebApplication4/.config
+WebApplication4/obj
+WebApplication4/bin
+
+# Ignore NuGet packages
+*.nuget.props
+*.nuget.targets
+packages/
+
+# Ignore user-specific files
+*.suo
+*.user
+*.userprefs
+*.vscode
+
+# Ignore build and publish files
+*_i.c
+*_p.c
+*.ilk
+*.meta
+*.obj
+*.pch
+*.pdb
+*.pgc
+*.pgd
+*.rsp
+*.sbr
+*.tlb
+*.tli
+*.tlh
+*.tmp
+*.tmp_proj
+*.log
+*.vspscc
+*.vssscc
+.builds
+*.pidb
+*.svclog
+*.scc
+
+# Ignore Roslyn analyzer cache
+*.ide
+
+# Ignore Resharper files
+_ReSharper*/
+*.resharper*
+*.DotSettings.user
+
+# Ignore Visual Studio Code files
+.vscode/
+
+# Ignore Mac files
+.DS_Store
+
+# Ignore JetBrains Rider files
+.idea/
+*.sln.iml
+*.ipr
+*.iws
+.idea/
+
+# Ignore Node.js files
+node_modules/
+npm-debug.log*
+yarn-error.log*
+
+# Ignore .NET Core files
+*.dll
+*.exe
+*.pdb
+*.dll.config
+*.json
+*.csproj
+*.userprefs
+*.lock
+*.cache
+*.bak
+*.swp
+*.tmp
+*.tmp_proj
+*.log
+*.vspscc
+*.vssscc
+*.builds
+*.pidb
+*.svclog
+*.scc

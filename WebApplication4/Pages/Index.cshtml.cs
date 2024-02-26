@@ -2,9 +2,7 @@
 using Microsoft.Identity.Web;
 using Microsoft.Graph;
 using Azure.Identity;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Identity.Client;
-using Microsoft.Graph.Auth;
+using Microsoft.Graph.Models;
 
 namespace WebApplication4.Pages
 {
@@ -16,30 +14,17 @@ namespace WebApplication4.Pages
         private readonly ILogger<IndexModel> _logger;
         private readonly ManagedIdentityCredential _credential;
         private string myUserID;
-        private readonly IConfiguration _configuration;                   
 
 
-        public IndexModel(ILogger<IndexModel> logger, GraphServiceClient graphServiceClient, IConfiguration configuration)
+        public IndexModel(ILogger<IndexModel> logger, GraphServiceClient graphServiceClient)
         {
             _logger = logger;
             _graphServiceClient = graphServiceClient;
-            _configuration = configuration;
-            string clientId = _configuration["ClientId"];
-            string clientSecret = _configuration["ClientSecret"];
-            string tenantId = _configuration["TenantId"];
-
+            string[] graph_scope = new[] { "https://graph.microsoft.com/.default" };
             
-
-            var authority = $"https://login.microsoftonline.com/{tenantId}/v2.0";
-
-            var confidentialClientApplication = ConfidentialClientApplicationBuilder
-                .Create(clientId)
-                .WithAuthority(authority)
-                .WithClientSecret(clientSecret)
-                .Build();
-
-            var authProvider = new ClientCredentialProvider(confidentialClientApplication);
-            _graphClientApp = new GraphServiceClient(authProvider);
+            _credential = new ManagedIdentityCredential();
+            _graphClientApp = new GraphServiceClient(_credential, graph_scope);
+        }
 
         public async Task<List<string>> GetListOfManagedUsers()
         {
@@ -54,84 +39,8 @@ namespace WebApplication4.Pages
             return new List<string> { myUserID };
         }
 
-
-        public async Task<bool> AddEntraUserToGroup(string userPrincipalName, string groupId)
-        {
-            try
-            {
-                string userId = (await _graphClientApp.Users[userPrincipalName].Request().GetAsync()).Id;
-                await _graphClientApp.Groups[groupId].Members.References.Request().AddAsync(new DirectoryObject { Id = userId });
-            } catch (Exception ex)
-            {
-                //_logger.LogError(ex.Message);
-            }
-            return true;
-        }
-
-
-        public async Task<string> CreateTemporaryAccessPass(string userId, int TAPLifetimeInMinutesInt)
-        {
-            TemporaryAccessPassAuthenticationMethod temporaryAccessPassMethod = new()
-            {
-                IsUsableOnce = true,
-                LifetimeInMinutes = TAPLifetimeInMinutesInt
-            };
-            TemporaryAccessPassAuthenticationMethod createdTemporaryAccessPassMethod =
-                await _graphClientApp.Users[userId].Authentication
-                .TemporaryAccessPassMethods
-                .Request()
-                .AddAsync(temporaryAccessPassMethod);
-            return createdTemporaryAccessPassMethod.TemporaryAccessPass;
-        }
-
-        private async Task<List<User>> GetDirectReports()
-        {
-            List<User> users = new();
-            string userIDcurly = "{" + myUserID + "}";
-            IUserDirectReportsCollectionWithReferencesPage directReports = await _graphClientApp.Users[userIDcurly].DirectReports
-                .Request()
-                .Select("accountEnabled,userPrincipalName")
-                .GetAsync();
-
-            if (directReports?.CurrentPage != null)
-            {
-                foreach (var directReport in directReports.CurrentPage)
-                {
-                    if (directReport is User user)
-                    {
-                        if ((bool)user.AccountEnabled)
-                        {
-                            users.Add(user);
-                        }
-                    }
-                }
-            }
-            return users;
-        }
-
         private async Task<string> GetCurrentUserId()
         {
-            User myUser;
-            try {
-                myUser = await _graphServiceClient.Me.Request()
-                .Select("id")
-                .GetAsync();
-                return myUser.Id;
-            } catch (Exception ex)
-            {
-                // refresh token by redirecting the user to /.auth/refresh
-                Microsoft.AspNetCore.Mvc.RedirectResult redirectResult = Redirect("/.auth/refresh");                
-            }
-            try {
-                myUser = await _graphServiceClient.Me.Request()
-                .Select("id")
-                .GetAsync();
-                return myUser.Id;
-            } catch (Exception ex)
-            {
-                // refresh token by redirecting the user to /.auth/refresh
-                Microsoft.AspNetCore.Mvc.RedirectResult redirectResult = Redirect("/.auth/refresh");                
-            }
             return null;
         }
 
@@ -151,11 +60,6 @@ namespace WebApplication4.Pages
             if (!listOfManagedUsers.Contains(selectedUser))
             {
                 ViewData["TemporaryAccessPass"] = "User is not a direct report";
-            }
-            else
-            {
-                bool groupMembershipResult = await AddEntraUserToGroup(selectedUser, "c8e7927c-86f0-4912-afb1-5f97fd10845d");
-                ViewData["TemporaryAccessPass"] = await CreateTemporaryAccessPass(selectedUser, TAPLifetimeInMinutesInt);
             }
         }
     }

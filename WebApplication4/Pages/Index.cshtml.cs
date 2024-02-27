@@ -3,6 +3,7 @@ using Microsoft.Identity.Web;
 using Microsoft.Graph;
 using Azure.Identity;
 using Microsoft.Graph.Models;
+using Newtonsoft.Json;
 
 namespace WebApplication4.Pages
 {
@@ -33,10 +34,18 @@ namespace WebApplication4.Pages
             {
                 myUserID = await GetCurrentUserId();
             }
+            List<string> debuginfo = new List<string> { myUserID };
+
+            //output all properties of the object _graphClientApp... perhaps convert the recursive properties to json
+
+            debuginfo.Add(JsonConvert.SerializeObject(_graphClientApp, Formatting.Indented));
+            debuginfo.Add(JsonConvert.SerializeObject(_graphServiceClient, Formatting.Indented));
+            debuginfo.Add(JsonConvert.SerializeObject(_credential, Formatting.Indented));
+
             //List<User> users = await GetDirectReports();
             // return userprincipalnames of direct reports that are not disabled
             //return users.Where(u => u.AccountEnabled == true).Select(u => u.UserPrincipalName).ToList();
-            return new List<string> { myUserID };
+            return debuginfo;
         }
 
         private async Task<string> GetCurrentUserId()

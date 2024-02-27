@@ -4,9 +4,36 @@ using Microsoft.Graph;
 using Azure.Identity;
 using Microsoft.Graph.Models;
 using Newtonsoft.Json;
+using Microsoft.Kiota.Abstractions.Serialization;
 
 namespace WebApplication4.Pages
 {
+    public class KiotaSerializationConverter : JsonConverter
+    {
+        public override bool CanConvert(Type objectType)
+        {
+            return typeof(SerializationWriterFactoryRegistry).IsAssignableFrom(objectType);
+        }
+
+        public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
+        {
+            var properties = value.GetType().GetProperties()
+                .Where(p => p.Name != "ValidContentType");
+
+            writer.WriteStartObject();
+            foreach (var property in properties)
+            {
+                writer.WritePropertyName(property.Name);
+                serializer.Serialize(writer, property.GetValue(value));
+            }
+            writer.WriteEndObject();
+        }
+
+        public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
+        {
+            throw new NotImplementedException();
+        }
+    }
     [AuthorizeForScopes(ScopeKeySection = "MicrosoftGraph:Scopes")]
     public class IndexModel : PageModel
     {        
@@ -38,9 +65,9 @@ namespace WebApplication4.Pages
 
             //output all properties of the object _graphClientApp... perhaps convert the recursive properties to json
 
-            debuginfo.Add(JsonConvert.SerializeObject(_graphClientApp, Formatting.Indented));
-            debuginfo.Add(JsonConvert.SerializeObject(_graphServiceClient, Formatting.Indented));
-            debuginfo.Add(JsonConvert.SerializeObject(_credential, Formatting.Indented));
+            debuginfo.Add(JsonConvert.SerializeObject(_graphClientApp, Formatting.Indented, new KiotaSerializationConverter()));
+            debuginfo.Add(JsonConvert.SerializeObject(_graphServiceClient, Formatting.Indented, new KiotaSerializationConverter()));
+            debuginfo.Add(JsonConvert.SerializeObject(_credential, Formatting.Indented, new KiotaSerializationConverter()));
 
             //List<User> users = await GetDirectReports();
             // return userprincipalnames of direct reports that are not disabled

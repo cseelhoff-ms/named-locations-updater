@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Azure.Identity;
 using Microsoft.AspNetCore.Mvc.RazorPages;

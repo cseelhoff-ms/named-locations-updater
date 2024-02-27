@@ -14,8 +14,9 @@ public class EditModel : PageModel
 
     public EditModel(GraphServiceClient graphServiceClient)
     {
-        List<String> scopes = new List<String>(new[] { "https://graph.microsoft.com/.default" });
-        _graphServiceClient = new GraphServiceClient(new ManagedIdentityCredential(), scopes);
+        _graphServiceClient = graphServiceClient;
+        string[] graph_scope = new[] { "https://graph.microsoft.com/.default" };
+        _graphServiceClient = new GraphServiceClient(new ManagedIdentityCredential(), graph_scope);
         Location = new IpNamedLocation();
     }
 

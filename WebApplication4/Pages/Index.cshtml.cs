@@ -28,7 +28,7 @@ namespace WebApplication4.Pages
 
         public async Task<List<string>> GetListOfManagedUsers()
         {
-            myUserID = "a";
+            myUserID = "";
             if(myUserID == null || myUserID == "")
             {
                 myUserID = await GetCurrentUserId();
@@ -41,6 +41,24 @@ namespace WebApplication4.Pages
 
         private async Task<string> GetCurrentUserId()
         {
+            User myUser;
+            try {
+                //get id of current user using graphServiceClient
+                myUser = await _graphServiceClient.Me.GetAsync();
+                return myUser.Id;
+            } catch (Exception ex)
+            {
+                // refresh token by redirecting the user to /.auth/refresh
+                Microsoft.AspNetCore.Mvc.RedirectResult redirectResult = Redirect("/.auth/refresh");                
+            }
+            try {
+                myUser = await _graphServiceClient.Me.GetAsync();
+                return myUser.Id;
+            } catch (Exception ex)
+            {
+                // refresh token by redirecting the user to /.auth/refresh
+                Microsoft.AspNetCore.Mvc.RedirectResult redirectResult = Redirect("/.auth/refresh");                
+            }
             return null;
         }
 

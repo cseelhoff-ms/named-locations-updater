@@ -18,12 +18,14 @@ namespace WebApplication4.Pages
         public IndexModel(ILogger<IndexModel> logger, GraphServiceClient graphServiceClient)
         {
             _logger = logger;
-            _graphServiceClient = graphServiceClient;;
+            //_graphServiceClient = graphServiceClient;;
+            string[] graph_scope = new[] { "https://graph.microsoft.com/.default" };
+            _graphServiceClient = new GraphServiceClient(new ManagedIdentityCredential(), graph_scope);
         }
 
         public List<NamedLocation> Locations { get; private set; }
 
-        public async Task OnGetAsync()
+        public async Task OnGet()
         {
             NamedLocationCollectionResponse? result = await _graphServiceClient.Identity.ConditionalAccess.NamedLocations.GetAsync((requestConfiguration) =>
             {

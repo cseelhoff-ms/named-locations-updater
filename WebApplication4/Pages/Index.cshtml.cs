@@ -18,9 +18,7 @@ namespace WebApplication4.Pages
         public IndexModel(ILogger<IndexModel> logger, GraphServiceClient graphServiceClient)
         {
             _logger = logger;
-            //_graphServiceClient = graphServiceClient;;
-            string[] graph_scope = new[] { "https://graph.microsoft.com/.default" };
-            _graphServiceClient = new GraphServiceClient(new ManagedIdentityCredential(), graph_scope);
+            _graphServiceClient = graphServiceClient;;
         }
 
         public List<NamedLocation> Locations { get; private set; }

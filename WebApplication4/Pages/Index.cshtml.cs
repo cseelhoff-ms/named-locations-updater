@@ -5,9 +5,11 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Logging;
 using Microsoft.Graph;
 using Microsoft.Graph.Models;
+using Microsoft.Identity.Web;
 
 namespace WebApplication4.Pages
-{
+{    
+    [AuthorizeForScopes(ScopeKeySection = "MicrosoftGraph:Scopes")]
     public class IndexModel : PageModel
     {
         private readonly ILogger<IndexModel> _logger;
@@ -16,8 +18,7 @@ namespace WebApplication4.Pages
         public IndexModel(ILogger<IndexModel> logger, GraphServiceClient graphServiceClient)
         {
             _logger = logger;
-            List<String> scopes = new List<String>(new[] { "https://graph.microsoft.com/.default" }); //Policy.Read.All
-            _graphServiceClient = new GraphServiceClient(new ManagedIdentityCredential(), scopes);
+            _graphServiceClient = graphServiceClient;;
         }
 
         public List<NamedLocation> Locations { get; private set; }

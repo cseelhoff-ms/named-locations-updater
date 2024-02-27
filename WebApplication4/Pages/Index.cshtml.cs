@@ -16,7 +16,7 @@ namespace WebApplication4.Pages
         public IndexModel(ILogger<IndexModel> logger, GraphServiceClient graphServiceClient)
         {
             _logger = logger;
-            List<String> scopes = new List<String>(new[] { "https://graph.microsoft.com/.default" });
+            List<String> scopes = new List<String>(new[] { "https://graph.microsoft.com/.default" }); //Policy.Read.All
             _graphServiceClient = new GraphServiceClient(new ManagedIdentityCredential(), scopes);
         }
 
